@@ -1,0 +1,32 @@
+{
+  "name": "website-agent-connector",
+  "private": true,
+  "description": "Human approval queue for connecting a Hermes-style agent to any CMS.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node demo-cms/server.mjs",
+    "test": "node scripts/test.mjs",
+    "test:unit": "node scripts/test.mjs unit",
+    "test:e2e": "node scripts/test.mjs e2e",
+    "loop": "node examples/full-loop.mjs",
+    "agent": "node examples/agent-loop.mjs",
+    "agent:webhook": "node examples/agent-webhook.mjs",
+    "agent:standing": "node examples/standing-agent.mjs",
+    "conformance": "node conformance/run.mjs --config conformance/profiles/demo-cms.json"
+  },
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Azhonaras",
+  "keywords": [
+    "ai-agent",
+    "human-in-the-loop",
+    "approval-queue",
+    "cms",
+    "wordpress",
+    "aspnet-core",
+    "rest-api",
+    "conformance-tests"
+  ]
+}

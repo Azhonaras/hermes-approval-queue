@@ -1,0 +1,54 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  node:
+    name: Node reference, conformance suite, plugin build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm test
+      - name: Conformance suite against the demo CMS
+        run: |
+          node demo-cms/server.mjs &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8790/api/seo/ping >/dev/null && break; sleep 1; done
+          npm run conformance -- --yes
+      - name: Build the WordPress plugin
+        run: node ports/php/wordpress/build.mjs
+
+  php:
+    name: PHP core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - run: php ports/php/core/test/notify.php
+      - run: php ports/php/core/test/request.php
+      - name: Syntax check every PHP file
+        run: find ports/php -name '*.php' -not -path '*/vendor/*' -print0 | xargs -0 -n1 php -l > /dev/null
+
+  dotnet:
+    name: .NET port (in-memory tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      # The SQL Server store tests skip themselves unless HERMES_TEST_DB is set.
+      - run: dotnet test ports/dotnet.tests

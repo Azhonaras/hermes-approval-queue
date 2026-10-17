@@ -1,0 +1,8 @@
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.png binary
+*.jpg binary
+
+# Language stats on GitHub: the review UI and the examples are product code, not documentation
+demo/** linguist-documentation=false
+examples/** linguist-documentation=false

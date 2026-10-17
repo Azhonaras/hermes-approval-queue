@@ -1,0 +1,9 @@
+{
+  "name": "hermes-approval-demo-cms",
+  "private": true,
+  "type": "module",
+  "description": "In-memory demo CMS. Dummy keys only.",
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}

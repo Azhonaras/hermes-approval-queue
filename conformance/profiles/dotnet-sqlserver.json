@@ -1,0 +1,37 @@
+{
+  "baseUrl": "http://127.0.0.1:8791/api/seo",
+  "writeHeader": "X-Api-Key: demo-write",
+  "readHeader": "X-Api-Key: demo-read",
+  "reviewHeaders": [
+    "X-Review-Session: demo-manager"
+  ],
+  "resourceType": "article",
+  "resourceId": 42,
+  "action": "update:canonical",
+  "scope": "seo:write",
+  "payload": {
+    "canonical": "https://example.com/c-{{uid}}"
+  },
+  "otherAction": "update:redirect",
+  "otherScope": "content:update",
+  "deleteAction": "delete:taxonomy",
+  "verifyUrl": "http://127.0.0.1:8791/api/seo/resources/article/42",
+  "verifyField": "canonical",
+  "verifyHeaders": [
+    "X-Api-Key: demo-read"
+  ],
+  "expiredFixture": {
+    "approvalId": 1036,
+    "resourceType": "page",
+    "resourceId": 77,
+    "action": "update:onpage",
+    "scope": "seo:write",
+    "proposal": {
+      "titleSeo": "Expired sample"
+    }
+  },
+  "failingPayload": {
+    "title": "Partial write must not survive",
+    "canonical": "not a url"
+  }
+}

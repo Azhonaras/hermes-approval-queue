@@ -1,0 +1,37 @@
+{
+  "baseUrl": "http://127.0.0.1:8792/wp-json/hermes-approval/v1",
+  "writeHeader": "X-Api-Key: demo-write",
+  "readHeader": "X-Api-Key: demo-read",
+  "reviewHeaders": [
+    "Authorization: Basic BASE64-OF-reviewer-login:application-password"
+  ],
+  "resourceType": "post",
+  "resourceId": 42,
+  "action": "update:canonical",
+  "scope": "seo:write",
+  "payload": {
+    "canonical": "https://example.com/c-{{uid}}"
+  },
+  "otherAction": "update:redirect",
+  "otherScope": "content:update",
+  "deleteAction": "delete:taxonomy",
+  "verifyUrl": "http://127.0.0.1:8792/wp-json/hermes-approval/v1/resources/post/42",
+  "verifyField": "canonical",
+  "verifyHeaders": [
+    "X-Api-Key: demo-read"
+  ],
+  "failingPayload": {
+    "canonical": "https://example.com/partial-must-not-survive",
+    "redirect": "not a url"
+  },
+  "expiredFixture": {
+    "approvalId": 1036,
+    "resourceType": "page",
+    "resourceId": 77,
+    "action": "update:onpage",
+    "scope": "seo:write",
+    "proposal": {
+      "titleSeo": "Expired sample"
+    }
+  }
+}

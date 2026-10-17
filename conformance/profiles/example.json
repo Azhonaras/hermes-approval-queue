@@ -1,0 +1,22 @@
+{
+  "baseUrl": "https://STAGING.example.com/api/approvals",
+  "writeHeader": "X-Api-Key: PUT-THE-AGENT-WRITE-KEY-HERE",
+  "readHeader": "X-Api-Key: PUT-THE-AGENT-READ-KEY-HERE",
+  "reviewHeaders": [
+    "Cookie: PUT-A-MANAGER-SESSION-COOKIE-HERE",
+    "X-CSRF-Token: only-if-your-cms-needs-one"
+  ],
+  "resourceType": "post",
+  "resourceId": 12,
+  "action": "update:title",
+  "scope": "content:write",
+  "payload": {
+    "title": "Conformance {{uid}}"
+  },
+  "otherAction": "update:slug",
+  "otherScope": "content:publish",
+  "deleteAction": "delete:post",
+  "verifyUrl": "https://STAGING.example.com/public-or-admin-read/posts/12",
+  "verifyField": "title",
+  "verifyHeaders": []
+}

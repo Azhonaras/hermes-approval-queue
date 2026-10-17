@@ -1,0 +1,8 @@
+{
+  "name": "hermes/approval-core",
+  "description": "Framework-free core of the human-approval queue for AI agent writes: rules, state machine, strict JSON, guard. Bring your own store and CMS adapter.",
+  "type": "library",
+  "license": "Apache-2.0",
+  "require": { "php": ">=8.1", "ext-mbstring": "*" },
+  "autoload": { "psr-4": { "Hermes\\Approval\\": "src/" } }
+}

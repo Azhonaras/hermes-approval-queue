@@ -1,0 +1,17 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/wp-admin/plugins.php",
+  "preferredVersions": { "php": "8.3", "wp": "latest" },
+  "steps": [
+    { "step": "setSiteOptions", "options": { "permalink_structure": "/%postname%/" } },
+    {
+      "step": "defineWpConfigConsts",
+      "consts": { "HERMES_APPROVAL_READ_KEYS": "demo-read", "HERMES_APPROVAL_WRITE_KEYS": "demo-write" }
+    },
+    { "step": "activatePlugin", "pluginPath": "hermes-approval/hermes-approval.php" },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; global $wpdb; $t = \\Hermes\\Approval\\Wp\\WpdbStore::table(); $wpdb->query( \"DELETE FROM $t WHERE approval_id = 1036\" ); $wpdb->query( \"INSERT INTO $t (approval_id, site_id, resource_type, resource_id_json, action, scope, status, reason, proposal_json, edited_proposal, created_utc, decided_utc, decided_by, expires_utc) VALUES (1036, 1, 'page', '77', 'update:onpage', 'seo:write', 'Approved', 'Seeded for the conformance suite: already expired.', '{\\\"titleSeo\\\":\\\"Expired sample\\\"}', 0, '2020-01-01 09:00:00', '2020-01-01 09:10:00', 'admin', '2020-01-02 09:00:00')\" ); echo 'seeded';"
+    }
+  ]
+}

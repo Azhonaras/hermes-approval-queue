@@ -1,0 +1,14 @@
+/** Static sample rows shown when the demo API is not running (e.g. GitHub Pages). */
+export const FALLBACK = {
+  pending: [
+    { approvalId: 1042, siteId: 1, resourceType: 'article', resourceId: 42, action: 'update:canonical', scope: 'seo:write', status: 'Pending', reason: 'Canonical is empty; propose the HTTPS sample URL.', proposal: { canonical: 'https://example.com/articles/sample-guide' }, createdUtc: '2026-09-09T09:10:00.000Z', expiresUtc: '2027-09-09T09:10:00.000Z', decidedBy: null, decisionReason: null },
+    { approvalId: 1041, siteId: 1, resourceType: 'page', resourceId: 88, action: 'update:onpage', scope: 'seo:write', status: 'Pending', reason: 'Title and description do not match the page topic.', proposal: { titleSeo: 'Sample guide | Example', descriptionSeo: 'A public demo description. Not a real page.' }, createdUtc: '2026-09-09T07:45:00.000Z', expiresUtc: '2027-09-09T07:45:00.000Z', decidedBy: null, decisionReason: null }
+  ],
+  history: [
+    { approvalId: 9001, resourceType: 'page', resourceId: 1, action: 'update:onpage', status: 'ChangesRequested', decidedBy: 'manager.demo', decidedUtc: '2026-09-13T10:20:00.000Z', decisionReason: 'این جمله با حروف فارسی شروع می‌شود تا راست‌چین بودن ستون بازخورد را بسنجیم. اگر متن از چپ شروع شد یا دکمه بیشتر دیده نشد، باگ داریم. عنوان را کوتاه کنید و توضیح متا را با موضوع صفحه هم‌خوان کنید.', reason: 'LOCALTEST bidi-fa', proposal: { titleSeo: 'LOCALTEST bidi fa' } },
+    { approvalId: 1040, resourceType: 'page', resourceId: 55, action: 'update:redirect', status: 'Approved', decidedBy: 'manager.demo', decidedUtc: '2026-09-09T05:50:00.000Z', decisionReason: 'Waiting for the agent to apply the exact 301 mapping. Keep the old slug in place until the write succeeds.', reason: 'Old slug should 301.', proposal: { from: '/old-guide', to: '/guide', code: 301 } },
+    { approvalId: 1039, resourceType: 'article', resourceId: 200, action: 'update:onpage', status: 'Consumed', decidedBy: 'manager.demo', decidedUtc: '2026-09-08T14:32:00.000Z', decisionReason: 'Approved; agent wrote the same JSON.', reason: '', proposal: { titleSeo: 'Example article' } },
+    { approvalId: 1038, resourceType: 'page', resourceId: 12, action: 'update:canonical', status: 'Rejected', decidedBy: 'manager.demo', decidedUtc: '2026-09-08T13:14:00.000Z', decisionReason: 'Canonical pointed at another domain.', reason: '', proposal: { canonical: 'https://other.example/page' } },
+    { approvalId: 1037, resourceType: 'product', resourceId: 9, action: 'update:onpage', status: 'ChangesRequested', decidedBy: 'manager.demo', decidedUtc: '2026-09-07T10:50:00.000Z', decisionReason: 'عنوان را کوتاه کنید و توضیح متا را با موضوع صفحه هم‌خوان کنید. درخواست قبلی بدون تغییر محفوظ می‌ماند و عامل باید revision جدید بفرستد.', reason: '', proposal: { titleSeo: 'A very long sample product title' } }
+  ]
+};

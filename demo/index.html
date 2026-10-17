@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>صف تأیید Hermes</title>
+  <meta name="description" content="Open-source demo of a human approval queue for an AI agent writing to a CMS." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <p class="banner">متن‌باز · طراحی <a href="https://github.com/Azhonaras">Azhonaras</a> · Apache-2.0 · <span id="liveHint">برای اتصال به API: <code>node demo-cms/server.mjs</code></span></p>
+
+  <div class="hermes-queue" data-cms-home="">
+    <main class="hq" aria-labelledby="hermes-page-title">
+      <section class="hq-head">
+        <div>
+          <p class="hq-eyebrow">صف تصمیم‌گیری انسانی</p>
+          <h1 id="hermes-page-title">درخواست‌های در انتظار تأیید</h1>
+          <p class="hq-subtitle">منبع، عملیات، دلیل عامل و payload دقیق را مرور کنید. تأیید فقط همان درخواست ثبت‌شده را برای یک اجرای موفق مجاز می‌کند.</p>
+        </div>
+        <div class="hq-head__aside">
+          <a class="hq-back" id="cmsHomeLink" href="#">
+            <span class="hq-back__mark">
+              <svg class="hq-back__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 10.5 12 4.5l7 6V19a1 1 0 0 1-1 1h-4.5v-5h-3v5H6a1 1 0 0 1-1-1z"/>
+              </svg>
+            </span>
+            <span class="hq-back__text">بازگشت به CMS</span>
+          </a>
+          <div class="hq-security"><span class="hq-lock" aria-hidden="true"></span> عامل امکان تأیید درخواست خود را ندارد</div>
+        </div>
+      </section>
+
+      <p class="hq-msg hq-msg--ok" id="flash" role="status" aria-live="polite" hidden></p>
+
+      <section class="hq-summary" aria-label="خلاصه صف">
+        <div class="cell"><span class="hq-mark"></span><div><span class="hq-value" id="pendingCount">0</span><span class="hq-label">در انتظار تصمیم</span></div></div>
+        <div class="cell"><span class="hq-mark hq-mark--green"></span><div><span class="hq-value" id="routineCount">0</span><span class="hq-label">تغییر معمول</span></div></div>
+        <div class="cell"><span class="hq-mark hq-mark--warn"></span><div><span class="hq-value" id="reviewCount">0</span><span class="hq-label">نیازمند بررسی دقیق</span></div></div>
+      </section>
+
+      <div class="hq-tabs" role="tablist" aria-label="بخش‌های صف">
+        <button type="button" role="tab" class="hq-tab is-active" id="tabQueue" aria-controls="queuePane" aria-selected="true">صف انتظار</button>
+        <button type="button" role="tab" class="hq-tab" id="tabHistory" aria-controls="historyPane" aria-selected="false">تاریخچه</button>
+      </div>
+
+      <div id="queuePane" class="hq-pane" role="tabpanel" aria-labelledby="tabQueue">
+        <section class="hq-toolbar" aria-label="کنترل‌های صف">
+          <div class="hq-toolbar__group">
+            <button type="button" class="hq-select-all" id="selectAll" aria-pressed="false">
+              <span class="hq-select-all__box" aria-hidden="true"></span>
+              انتخاب همه موارد نمایش‌داده‌شده
+            </button>
+            <select id="riskFilter" aria-label="فیلتر سطح بررسی">
+              <option value="all">همه درخواست‌ها</option>
+              <option value="routine">تغییر معمول</option>
+              <option value="review">نیازمند بررسی دقیق</option>
+            </select>
+          </div>
+          <div class="hq-toolbar__group">
+            <span class="hq-sync">آخرین همگام‌سازی: <span id="syncedAt">—</span> · خودکار هر دقیقه (<span id="refreshIn">۰۱:۰۰</span>)</span>
+            <button class="hq-btn" id="refreshQueue" type="button">بارگذاری مجدد</button>
+            <button class="hq-btn" id="collapseAll" type="button">بستن جزئیات</button>
+          </div>
+        </section>
+
+        <section class="hq-list" id="requestList" aria-label="درخواست‌های عامل"></section>
+
+        <footer class="hq-actions" aria-label="اقدام‌های تأیید">
+          <div class="hq-actions-inner">
+            <div class="hq-selection">
+              <span class="hq-selection__count" id="selectionCount">۰</span>
+              <div class="hq-selection__copy">
+                <strong id="selectionLabel">هیچ موردی انتخاب نشده</strong>
+                <span>هر تصمیم با هویت نشست مدیر ثبت می‌شود</span>
+              </div>
+              <button class="hq-link" id="clearSelection" type="button" hidden>پاک کردن انتخاب</button>
+            </div>
+            <div class="hq-buttons">
+              <button class="hq-btn hq-btn--quiet" id="requestChanges" type="button" disabled>درخواست اصلاح</button>
+              <button class="hq-btn hq-btn--reject" id="rejectSelected" type="button" disabled>رد انتخاب‌شده‌ها</button>
+              <button class="hq-btn hq-btn--approve" id="approveSelected" type="button" disabled>تأیید انتخاب‌شده‌ها</button>
+            </div>
+          </div>
+        </footer>
+      </div>
+
+      <div id="historyPane" class="hq-pane" role="tabpanel" aria-labelledby="tabHistory" hidden>
+        <section class="hq-toolbar" aria-label="فیلتر تاریخچه">
+          <div class="hq-toolbar__group">
+            <select id="historyStatus" aria-label="فیلتر وضعیت تاریخچه">
+              <option value="all">همه وضعیت‌ها</option>
+              <option value="Rejected">رد شده</option>
+              <option value="Consumed">اجرا شده</option>
+              <option value="ChangesRequested">بازگردانده برای اصلاح</option>
+              <option value="Approved">تأیید شده — منتظر اجرا</option>
+              <option value="Expired">منقضی</option>
+            </select>
+            <input id="historySearch" type="search" maxlength="80" placeholder="جستجو: HRM، منبع، دلیل" aria-label="جستجو در تاریخچه" />
+          </div>
+          <div class="hq-toolbar__group">
+            <span class="hq-sync"><span id="historyCount">0</span> مورد</span>
+          </div>
+        </section>
+        <div class="hq-list">
+          <table class="hq-hist" id="historyTable">
+            <thead>
+              <tr>
+                <th>شناسه</th>
+                <th>وضعیت</th>
+                <th>منبع</th>
+                <th>عملیات</th>
+                <th>تصمیم‌گیرنده</th>
+                <th>زمان</th>
+                <th>دلیل / بازخورد</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <dialog class="hq-dialog" id="approveDialog">
+      <div class="hq-dialog__head">
+        <h2>تأیید نهایی درخواست‌ها</h2>
+        <p>پس از تأیید، عامل فقط payload دقیق نمایش‌داده‌شده را یک بار اجرا می‌کند.</p>
+      </div>
+      <div class="hq-dialog__body">
+        <div class="hq-dialog__summary" id="approveSummary"></div>
+        <label class="hq-confirm"><input id="approveAcknowledge" type="checkbox" /> <span>من منبع، عملیات، payload، دلیل عامل و دامنه اثر را مرور کرده‌ام.</span></label>
+      </div>
+      <div class="hq-dialog__actions">
+        <button class="hq-btn hq-btn--approve" id="confirmApprove" type="button" disabled>تأیید و ثبت تصمیم</button>
+        <button class="hq-btn" type="button" data-close="approveDialog">انصراف</button>
+      </div>
+    </dialog>
+
+    <dialog class="hq-dialog" id="changesDialog">
+      <div class="hq-dialog__head">
+        <h2>بازگرداندن برای اصلاح</h2>
+        <p>درخواست فعلی غیرقابل‌اجرا می‌شود. عامل باید revision جدید ثبت کند.</p>
+      </div>
+      <div class="hq-dialog__body">
+        <p class="hq-dialog__summary" id="changesSummary"></p>
+        <label>چه چیزی باید اصلاح شود؟<textarea class="hq-textarea" id="changesReason" maxlength="200" dir="auto"></textarea></label>
+        <p class="hq-dialog-error" id="changesError" hidden>نوشتن بازخورد اصلاح الزامی است.</p>
+      </div>
+      <div class="hq-dialog__actions">
+        <button class="hq-btn hq-btn--quiet" id="confirmChanges" type="button">ارسال برای اصلاح</button>
+        <button class="hq-btn" type="button" data-close="changesDialog">انصراف</button>
+      </div>
+    </dialog>
+
+    <dialog class="hq-dialog" id="rejectDialog">
+      <div class="hq-dialog__head">
+        <h2>رد درخواست‌ها</h2>
+        <p>دلیل در سابقه ذخیره و به عامل برمی‌گردد.</p>
+      </div>
+      <div class="hq-dialog__body">
+        <p class="hq-dialog__summary" id="rejectSummary"></p>
+        <label>دلیل تصمیم<textarea class="hq-textarea" id="rejectReason" maxlength="200" dir="auto"></textarea></label>
+        <p class="hq-dialog-error" id="rejectError" hidden>نوشتن دلیل الزامی است.</p>
+      </div>
+      <div class="hq-dialog__actions">
+        <button class="hq-btn hq-btn--reject" id="confirmReject" type="button">رد و ثبت دلیل</button>
+        <button class="hq-btn" type="button" data-close="rejectDialog">انصراف</button>
+      </div>
+    </dialog>
+  </div>
+
+  <script src="../src/client.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
